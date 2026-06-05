@@ -3,49 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Computing - Practical Assignment</title>
+    <title>Enterprise Cloud Infrastructure Dashboard</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .container { background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center; max-width: 450px; width: 100%; border: 1px solid #334155; }
-        .university-title { color: #94a3b8; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; font-weight: bold; }
-        h1 { color: #38bdf8; font-size: 24px; margin-bottom: 25px; font-weight: 600; letter-spacing: 0.5px; }
-        .info-card { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; border-left: 4px solid #38bdf8; }
-        .label { font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
-        .value { font-size: 16px; color: #f1f5f9; margin-top: 5px; font-weight: 500; }
-        .clock-box { margin-top: 25px; padding: 15px; background: linear-gradient(135deg, #38bdf8, #0369a1); border-radius: 12px; color: white; }
-        .clock-label { font-size: 11px; text-transform: uppercase; opacity: 0.9; font-weight: bold; }
-        #clock { font-size: 22px; font-weight: bold; margin-top: 5px; font-family: monospace; }
-        footer { margin-top: 20px; font-size: 12px; color: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+        
+        /* خلفية داكنة مائلة للبنفسجي والزهري البارد */
+        body { background: #0f0b15; color: #f3e8ee; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow-x: hidden; }
+        
+        /* تأثير الإضاءة الخلفية باللون الزهري البارد */
+        .bg-glow { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(244, 143, 177, 0.07) 0%, rgba(0,0,0,0) 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
+        
+        /* لوحة التحكم بتأثير زجاجي ناعم مع إطار زهري بارد */
+        .dashboard { position: relative; z-index: 1; background: rgba(30, 27, 38, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); max-width: 550px; width: 100%; border: 1px solid rgba(244, 143, 177, 0.12); }
+        
+        /* الهيدر */
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid rgba(244,143,177,0.08); padding-bottom: 20px; }
+        .uni-tag { background: rgba(244, 143, 177, 0.1); color: #f48fb1; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; uppercase; letter-spacing: 1.5px; display: inline-block; margin-bottom: 12px; border: 1px solid rgba(244, 143, 177, 0.25); }
+        h1 { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+        .subtitle { font-size: 13px; color: #9d8d9b; margin-top: 4px; }
+
+        /* كروت البيانات الشخصية */
+        .section-title { font-size: 12px; color: #bcaaa4; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 12px; text-align: left; padding-left: 2px; }
+        .grid-info { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 30px; }
+        .meta-card { background: rgba(20, 16, 26, 0.7); padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
+        .meta-card:hover { border-color: rgba(244, 143, 177, 0.4); background: rgba(20, 16, 26, 0.9); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(244, 143, 177, 0.05); }
+        .meta-label { font-size: 12px; color: #8e7f8d; text-transform: uppercase; font-weight: 600; }
+        .meta-value { font-size: 15px; color: #f3e8ee; font-weight: 500; text-align: right; }
+
+        /* شبكة مراقبة السيرفر */
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .metric-box { background: rgba(20, 16, 26, 0.4); border: 1px solid rgba(244,143,177,0.04); padding: 16px; border-radius: 14px; text-align: left; }
+        .metric-title { font-size: 11px; color: #9d8d9b; text-transform: uppercase; font-weight: 600; }
+        .metric-num { font-size: 20px; font-weight: 700; color: #fff; margin-top: 6px; font-family: monospace; display: flex; align-items: center; gap: 6px; }
+        
+        /* مؤشر الحالة الزهري النابض والمميز */
+        .status-dot { width: 8px; height: 8px; background: #f48fb1; border-radius: 50%; display: inline-block; box-shadow: 0 0 12px #f48fb1; animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 143, 177, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(244, 143, 177, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 143, 177, 0); }
+        }
+
+        footer { text-align: center; font-size: 11px; color: #6d5e6c; border-top: 1px solid rgba(244,143,177,0.08); padding-top: 20px; margin-top: 10px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="university-title">Jadara University</div>
-        <h1>Cloud Computing Assignment</h1>
-        
-        <div class="info-card">
-            <div class="label">Student Name</div>
-            <div class="value">Enas Ahmad Jomhawi</div>
+    <div class="bg-glow"></div>
+
+    <div class="dashboard">
+        <div class="header">
+            <div class="uni-tag">Jadara University</div>
+            <h1>Cloud Platform Node Architecture</h1>
+            <div class="subtitle">PaaS Practical Deployment Verification</div>
         </div>
 
-        <div class="info-card">
-            <div class="label">Student ID</div>
-            <div class="value">202310710</div>
+        <div class="section-title">Identity Metadata</div>
+        <div class="grid-info">
+            <div class="meta-card">
+                <span class="meta-label">Engineer Name</span>
+                <span class="meta-value" style="color: #f48fb1; font-weight: 600;">Enas Ahmad Jomhawi</span>
+            </div>
+            <div class="meta-card">
+                <span class="meta-label">Node / Student ID</span>
+                <span class="meta-value" style="font-family: monospace;">202310710</span>
+            </div>
+            <div class="meta-card">
+                <span class="meta-label">Core Specialization</span>
+                <span class="meta-value">Computer Science</span>
+            </div>
         </div>
 
-        <div class="info-card">
-            <div class="label">Academic Major</div>
-            <div class="value">Computer Science</div>
+        <div class="section-title">Live Cloud Node Telemetry</div>
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="metric-title">Instance Status</div>
+                <div class="metric-num" style="color: #f48fb1;"><span class="status-dot"></span> Active</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Node System Time</div>
+                <div class="metric-num" id="clock" style="color: #ce93d8;">00:00:00</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Simulated CPU Load</div>
+                <div class="metric-num" id="cpu-load" style="color: #ffcc80;">12.4%</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-title">Network Latency</div>
+                <div class="metric-num" id="latency" style="color: #b39ddb;">14 ms</div>
+            </div>
         </div>
 
-        <div class="clock-box">
-            <div class="clock-label">Live System Time (Dynamic Feature)</div>
-            <div id="clock">00:00:00</div>
-        </div>
-
-        <footer>Deployed via PaaS Architecture</footer>
+        <footer>Orchestrated Automatically via Render PaaS Framework</footer>
     </div>
 
     <script>
@@ -58,6 +108,13 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        setInterval(() => {
+            const simulatedCPU = (Math.random() * (16.2 - 4.1) + 4.1).toFixed(1);
+            const simulatedLatency = Math.floor(Math.random() * (19 - 10) + 10);
+            document.getElementById('cpu-load').textContent = `${simulatedCPU}%`;
+            document.getElementById('latency').textContent = `${simulatedLatency} ms`;
+        }, 3000);
     </script>
 </body>
 </html>
